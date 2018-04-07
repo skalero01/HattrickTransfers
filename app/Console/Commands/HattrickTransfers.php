@@ -13,12 +13,12 @@ class HattrickTransfers extends Command
     protected $description = 'Check prices';
 
     protected $search = [
-        // 5 stars
+        // Lateral
         [
-            'years'    => [27, 38], 
-            'skill'    => [5 => [7, 20]],
-            'prices'   => [0, 200000],
-            'stars'    => 5,
+            'years'    => [17, 19],
+            'skill'    => [5 => [7, 10]],
+            'prices'   => [0, 500000],
+            'potential'    => 2000,
             'position' => ['Lateral']
         ]
     ];
