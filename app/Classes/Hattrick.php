@@ -20,16 +20,19 @@ class Hattrick
         13 => 16, 14 => 17, 15 => 18, 16 => 19, 17 => 20, 18 => 20, 19 => 20, 20 => 20
     ];
     
-    public function __construct() {
+    public function __construct() 
+    {
         $this->allResults = collect($this->allResults);
         $this->team       = env('HATTRICK_TEAM', '');
     }
 
-    public function setBrowser($browser) {
+    public function setBrowser($browser) 
+    {
         $this->browser = $browser;
     }
 
-    public function logIn() {
+    public function logIn() 
+    {
         $username = env('HATTRICK_USER', '');
         $password = env('HATTRICK_PASS', '');
         $this->browser->visit('https://hattrick.org/');
@@ -39,7 +42,8 @@ class Hattrick
         $this->getDate();
     }
 
-    public function makeMasiveTransferSearch($searchs) {
+    public function makeMasiveTransferSearch($searchs) 
+    {
         $date = $this->getDate();
         echo "Hora local: $date\n\n";
 
@@ -69,7 +73,8 @@ class Hattrick
         \Log::info($this->allResults->toArray());
     }
 
-    public function makeTransferSearch($player) {
+    public function makeTransferSearch($player) 
+    {
         $this->browser->click('.scContainerNoSupporter > a:nth-child(4)');
 
         // Add years
@@ -125,7 +130,8 @@ class Hattrick
         $this->processResults($player);
     }
 
-    public function offerPlayer($quantity) {
+    public function offerPlayer($quantity) 
+    {
         $selector = '#ctl00_ctl00_CPContent_CPMain_updBid #ctl00_ctl00_CPContent_CPMain_pnlHighestBid > p > a:first-child';
         $res = $this->browser->resolver->find($selector);
         $team_winning = 'None';
@@ -152,7 +158,8 @@ class Hattrick
         echo "Oferta realizada por $quantity. \n";
     }
 
-    public function goToPlayer($playerId) {
+    public function goToPlayer($playerId) 
+    {
         echo "Entrado a playerId: $playerId \n";
         $this->browser->click('.scContainerNoSupporter > a:nth-child(1)');
         $this->browser->select(
@@ -192,7 +199,8 @@ class Hattrick
         return compact('limit', 'price');
     }
 
-    public function huntPlayers() {
+    public function huntPlayers() 
+    {
         $nextPlayers = $this->nextPlayers;
         $nextPlayers = $this->updateResults($nextPlayers);
 
@@ -210,7 +218,8 @@ class Hattrick
         return $this->waitTime(48*60); // Wait 48 hours
     }
 
-    private function waitTimeforBuying($player, $less_minutes = 0) {
+    private function waitTimeforBuying($player, $less_minutes = 0) 
+    {
         $this->getDate();
         $now = Carbon::createFromFormat('d/m/Y H:i:s', $this->date);
         $limit = Carbon::createFromFormat('d-m-Y H.i', $player['limit']);
@@ -220,7 +229,8 @@ class Hattrick
         $this->waitTime($minutes);
     }
 
-    private function waitTime($minutes) {
+    private function waitTime($minutes) 
+    {
         echo "Tiempo de espera de $minutes minutos.\n";
         if($minutes<=0) 
             return;
@@ -236,7 +246,8 @@ class Hattrick
         echo "Hora local final: ".Carbon::now()->format('Y-m-d H:i:s')."\n";
     }
 
-    private function huntPlayer($player) {
+    private function huntPlayer($player) 
+    {
         
         $this->waitTimeforBuying($player, 5);
 
@@ -262,7 +273,8 @@ class Hattrick
     }
 
     // If object is null will be filter and save on this->allResults var.
-    private function updateResults($object = null) {
+    private function updateResults($object = null) 
+    {
         if(is_null($object)) {
             $results = $this->allResults;
         } else  {
@@ -289,7 +301,8 @@ class Hattrick
         return $results;
     }
 
-    private function getPlayers($player) {
+    private function getPlayers($player) 
+    {
         return collect($this->browser->resolver->all('.transferPlayerInfo'))
             ->map(function($element) {
                 return $element->getAttribute('innerHTML');
@@ -372,8 +385,8 @@ class Hattrick
             });
     }
 
-    private function processResults($player) {
-
+    private function processResults($player) 
+    {
         // Get all the players
         $results = collect([]);
         $players = $this->getPlayers($player)->each(function($item) use (&$results) {
@@ -438,8 +451,8 @@ class Hattrick
 
     }
 
-    public function convertSearch($search) {
-
+    public function convertSearch($search) 
+    {
         // Divide by years
         $keys = -1;
         $rules = collect($search)->mapWithKeys(function($rule, $key) use (&$keys) {
@@ -548,7 +561,8 @@ class Hattrick
 
     }
 
-    private function getOffersOn($start, $finish) {
+    private function getOffersOn($start, $finish) 
+    {
 
         $startDate = Carbon::createFromFormat('d/m/Y H:i:s', $this->date)
                 ->addHours($start);
@@ -566,25 +580,27 @@ class Hattrick
 
     }
 
-    private function getDate() {
-
+    private function getDate() 
+    {
         $this->date = $this->browser->text('#time');
         return $this->date;
-
     }
 
-    public function getBestStar($player) {
+    public function getBestStar($player) 
+    {
         $result = $this->calculateBestStars($player);
         return $result->max();
     }
 
-    public function getPosition($player) {
+    public function getPosition($player) 
+    {
         $result = $this->calculateBestStars($player);
         $max = $result->max();
         return $result->search($max);
     }
 
-    public function calculateBestStars($player) {
+    public function calculateBestStars($player) 
+    {
         if($player['age'] < 25) {
             $player['forma'] = 7;
             $player['condicion'] = 7;
@@ -601,12 +617,14 @@ class Hattrick
         return $this->calculateStars($player);
     }
 
-    public function getBestStarNow($player) {
+    public function getBestStarNow($player) 
+    {
         $result = $this->calculateStars($player);
         return $result->max();
     }
 
-    public function calculateStars($player) {
+    public function calculateStars($player) 
+    {
         $player = $this->convertSkillsToNumbers($player);
         if(!isset($player['equipo_madre']))
             $player['equipo_madre'] = false;
@@ -723,7 +741,8 @@ class Hattrick
         return $result;
     }
 
-    private function getPositionStars($position, $table4, $table2) {
+    private function getPositionStars($position, $table4, $table2) 
+    {
         $res = 0;
         $res += $table4[$position][0]*$table2['porteria'];
         $res += $table4[$position][1]*$table2['defensa'];
@@ -759,7 +778,8 @@ class Hattrick
         0 => 'nulo',
     ];
 
-    private function convertSkillsToNumbers($player) {
+    private function convertSkillsToNumbers($player) 
+    {
         $convert = ['forma', 'condicion', 'experiencia', 'skills', 'liderazgo'];
         foreach ($convert as $name) {
             $player = $this->convertSkillToNumber($player, $name);
@@ -767,7 +787,8 @@ class Hattrick
         return $player;
     }
 
-    private function convertSkillToNumber($player, $value) {
+    private function convertSkillToNumber($player, $value) 
+    {
         if(!isset($player[$value]) || is_numeric($player[$value]))
             return $player;
         if(is_array($player[$value])) {
@@ -785,7 +806,8 @@ class Hattrick
         return $player;
     }
 
-    public function getHTMS($player) {
+    public function getHTMS($player) 
+    {
         $player = $this->convertSkillsToNumbers($player);
         // training points per week at a certain age
         $skills = $player['skills'];
